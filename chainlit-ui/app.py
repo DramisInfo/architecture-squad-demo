@@ -70,23 +70,42 @@ async def start():
     cl.user_session.set("squad", squad_session)
 
     # Welcome message
-    welcome_message = """# Welcome to the Architecture Squad! 🏗️
+    welcome_message = """# 🏗️ Welcome to the Architecture Squad!
 
-I'm your AI-powered architecture team, ready to help you design comprehensive system architectures.
+Our team of **certified solution architects** will collaborate to design your system architecture.
 
-## Our Specialized Team:
-- **Solution Architect** - High-level system design and patterns
-- **Technical Architect** - Detailed technical specifications  
-- **Security Architect** - Security design and compliance
-- **Data Architect** - Data strategy and storage design
-- **Documentation Specialist** - Comprehensive technical documentation
+## 👥 Meet Your Architecture Team:
 
-## How it works:
-1. Describe your system requirements or architecture challenge
-2. Watch our agents collaborate in real-time
-3. Receive a comprehensive architecture document
+### 🔍 **Platform Specialists**
+- **🔍 Platform Selector** - Routes to the right cloud specialist
+- **☁️ Azure Solution Architect** - Microsoft Azure certified expert
+- **🚀 AWS Solution Architect** - Amazon Web Services certified expert  
+- **🐳 Kubernetes Solution Architect** - Container orchestration & OpenShift expert
 
-**What would you like to architect today?**
+### 🛠️ **Technical Specialists**
+- **🏛️ Solution Architect** - General high-level system design
+- **⚙️ Technical Architect** - Detailed technical specifications
+- **🔒 Security Architect** - Security design and compliance
+- **💾 Data Architect** - Data strategy and storage design
+- **📚 Documentation Specialist** - Comprehensive technical documentation
+
+## 🚀 How It Works:
+
+1. **Describe your system requirements** (be specific about platform preferences if any)
+2. **Platform Selector** analyzes and routes to the appropriate certified specialist
+3. **Specialized architects collaborate** to create comprehensive architecture
+4. **Receive detailed documentation** tailored to your chosen platform
+
+## 💡 Example Requests:
+
+- *"Design a microservices e-commerce platform using Azure services"*
+- *"Create a serverless data processing pipeline on AWS"* 
+- *"Design a cloud-native application using Kubernetes and OpenShift"*
+- *"I need a scalable web application but not sure which cloud platform to use"*
+
+---
+
+**Ready to start?** Share your project requirements and let our certified architects collaborate on your solution! 🎯
 """
 
     await cl.Message(

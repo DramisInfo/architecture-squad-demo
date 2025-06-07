@@ -1,17 +1,35 @@
-# Architecture Squad Demo
+# Architecture Squad Demo - Certified Solution Architects
 
-A comprehensive demonstration of collaborative AI architect agents working together to produce detailed architecture documents. This repository contains multiple interconnected projects that showcase how specialized AI agents can collaborate through group chat patterns, web interfaces, and extensible plugin systems.
+A comprehensive demonstration of collaborative AI architect agents working together to produce detailed architecture documents. This repository showcases **certified solution architects** specialized in different cloud platforms (Azure, AWS, Kubernetes/OpenShift) who collaborate through Semantic Kernel group chat patterns.
+
+## 🏗️ What's New: Certified Solution Architects
+
+The Architecture Squad now includes **platform-certified specialists** who provide expert-level guidance for specific cloud platforms:
+
+### 🎯 Platform Specialists
+- **🔍 Platform Selector** - Intelligently routes requirements to the appropriate cloud specialist
+- **☁️ Azure Solution Architect** - Microsoft Azure certified expert with deep platform knowledge
+- **🚀 AWS Solution Architect** - Amazon Web Services certified expert with comprehensive AWS expertise  
+- **🐳 Kubernetes Solution Architect** - Container orchestration & OpenShift certified specialist
+
+### 🛠️ Technical Specialists  
+- **🏛️ Solution Architect** - General high-level system design for platform-agnostic solutions
+- **⚙️ Technical Architect** - Detailed technical specifications and implementation guidance
+- **🔒 Security Architect** - Security design, compliance, and risk assessment
+- **💾 Data Architect** - Data strategy, storage design, and data flow architecture
+- **📚 Documentation Specialist** - Comprehensive technical documentation and diagrams
 
 ## Repository Structure
 
 This repository contains three main components:
 
 ### 🤖 Architecture Squad (`/architecture-squad/`)
-A multi-agent system using **Semantic Kernel** group chat patterns where different architect agents collaborate to:
-- **Requirements Analysis**: Parse and understand project requirements
-- **Solution Design**: Create architectural patterns and designs
-- **Documentation Generation**: Produce detailed architecture documents
-- **Review & Validation**: Cross-validate designs and ensure quality
+A multi-agent system using **Semantic Kernel** group chat patterns where certified architect agents collaborate to:
+- **Platform Analysis**: Intelligent routing to certified cloud specialists
+- **Requirements Analysis**: Parse and understand project requirements  
+- **Solution Design**: Create platform-specific architectural patterns and designs
+- **Documentation Generation**: Produce detailed, platform-optimized architecture documents
+- **Review & Validation**: Cross-validate designs and ensure cloud best practices
 
 ### 🖥️ Chainlit UI (`/chainlit-ui/`)
 A modern web interface built with **Chainlit** that provides:
@@ -31,12 +49,15 @@ A modern web interface built with **Chainlit** that provides:
 
 The agents work together using Semantic Kernel's group chat functionality to simulate a real architecture team, with each agent bringing specialized expertise. The Chainlit interface provides an intuitive way to interact with the squad, while MCP servers add powerful plugin capabilities for enhanced functionality.
 
-## Features
+## 🚀 Features
 
-- **Multi-Agent Collaboration**: Agents with different architectural specializations
-- **Document Generation**: Automated creation of detailed architecture documents
-- **Interactive Workflow**: Agents communicate and build upon each other's work
-- **Extensible Framework**: Easy to add new agent types and capabilities
+- **🎯 Certified Platform Specialists**: Azure, AWS, and Kubernetes certified solution architects
+- **🔍 Intelligent Platform Routing**: Automatic selection of the best cloud specialist for your requirements
+- **🤝 Multi-Agent Collaboration**: Specialized agents working together with domain expertise
+- **📋 Platform-Optimized Documentation**: Architecture documents tailored to your chosen cloud platform
+- **🔧 Interactive Workflow**: Real-time collaboration between certified architects
+- **🌐 Multi-Cloud Support**: Design solutions for Azure, AWS, Kubernetes, or platform-agnostic architectures
+- **🛡️ Best Practices Integration**: Each specialist brings certified knowledge and industry best practices
 
 ## Getting Started
 
@@ -124,6 +145,44 @@ Model Context Protocol servers that extend agent capabilities through specialize
   - Diagram generation capabilities
   - Code analysis and recommendations
   - Compliance and security checking
+
+## 🎯 Quick Start with Certified Solution Architects
+
+### 1. Validate Setup
+```bash
+cd architecture-squad
+python validate_setup.py
+```
+
+### 2. Run Interactive Demo
+```bash
+cd architecture-squad
+python demo_certified_architects.py
+```
+
+This demo showcases:
+- **Azure Enterprise Solutions** - Microsoft ecosystem integration
+- **AWS Serverless Architectures** - Cost-optimized cloud-native solutions  
+- **Kubernetes Multi-Cloud** - Container orchestration and portability
+- **Platform-Agnostic Recommendations** - When no platform preference is specified
+
+### 3. Interactive Architecture Design
+```bash
+cd architecture-squad
+python main.py
+```
+
+Try these example requests:
+- *"Design a microservices e-commerce platform using Azure services"*
+- *"Create a serverless data processing pipeline on AWS"*
+- *"Design a cloud-native application using Kubernetes and OpenShift"*
+- *"I need a scalable web application but not sure which cloud platform to use"*
+
+### 4. Web Interface (Optional)
+```bash
+cd chainlit-ui
+chainlit run app.py
+```
 
 ## Usage
 
