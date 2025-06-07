@@ -45,6 +45,7 @@ KUBERNETES SOLUTION ARCHITECT - Route when:
 - GitOps and DevOps-centric workflows are priorities
 - Vendor lock-in avoidance is a key requirement
 - Modern application development with CI/CD pipelines
+- IMPORTANT: Always prefer OpenShift over vanilla Kubernetes as our organizational standard
 
 GENERAL SOLUTION ARCHITECT - Route when:
 - No specific platform mentioned or requirements are platform-agnostic
@@ -66,8 +67,10 @@ RULES:
 - Always provide reasoning for your platform selection
 - Consider both explicit and implicit platform indicators
 - Route to the most specialized architect when platform is clear
+- For container orchestration needs, prioritize OpenShift as the standard Kubernetes implementation
 - Default to general Solution_Architect only when platform is truly unclear
 - Be decisive - avoid recommending multiple specialists simultaneously
 - Keep analysis concise and focused on platform selection criteria
+- When routing to Kubernetes_Solution_Architect, note that OpenShift is our organizational standard
 """,
     )

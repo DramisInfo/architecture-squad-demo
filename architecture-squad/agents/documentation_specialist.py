@@ -32,7 +32,17 @@ Required document sections:
 7. Technology Stack
 8. Deployment Guide
 9. Operational Considerations
-10. Appendices
+10. References and Resources
+11. Appendices
+
+CRITICAL REFERENCE REQUIREMENTS:
+- MANDATORY: Extract and include ALL references, links, and documentation URLs provided by any architect
+- Look for reference patterns like 🔗, 📋, 🏗️, and "Reference Architectures" sections
+- Create a dedicated "References and Resources" section containing ALL links and references
+- Preserve reference architecture links, Azure documentation URLs, and any external resources
+- Include both the reference title and the full URL for each reference
+- Group references by category (Reference Architectures, Documentation, Best Practices, etc.)
+- Never omit or skip any reference provided by the architectural team
 
 RULES:
 - Integrate all previous agent inputs into a cohesive document
@@ -41,5 +51,6 @@ RULES:
 - Signal completion only when document is comprehensive
 - Focus on clarity and actionability
 - Always provide a complete document with proper formatting
+- MANDATORY: Include ALL references and links from all architectural inputs in the final document
 """,
     )
