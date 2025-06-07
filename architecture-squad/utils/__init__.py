@@ -6,9 +6,10 @@ the architecture squad components.
 """
 
 from .kernel import create_kernel
-from .chat import create_architecture_group_chat
+from .chat import create_architecture_group_chat, create_architecture_group_chat_async
 
 __all__ = [
     "create_kernel",
     "create_architecture_group_chat",
+    "create_architecture_group_chat_async",
 ]

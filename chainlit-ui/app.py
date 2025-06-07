@@ -17,11 +17,12 @@ sys.path.append(str(Path(__file__).parent.parent / "architecture-squad"))
 
 # Import architecture squad modules with error handling
 try:
-    from utils import create_kernel, create_architecture_group_chat
+    from utils import create_kernel, create_architecture_group_chat, create_architecture_group_chat_async
 except ImportError as e:
     print(f"Warning: Could not import architecture squad modules: {e}")
     create_kernel = None
     create_architecture_group_chat = None
+    create_architecture_group_chat_async = None
 
 
 class ArchitectureSquadSession:
@@ -34,11 +35,22 @@ class ArchitectureSquadSession:
 
     async def initialize(self):
         """Initialize the architecture squad"""
-        if not self.initialized and create_kernel and create_architecture_group_chat:
+        if not self.initialized and create_kernel and create_architecture_group_chat_async:
             self.kernel = create_kernel()
-            self.chat = create_architecture_group_chat(self.kernel)
+            # Try to use the enhanced async version first
+            try:
+                self.chat = await create_architecture_group_chat_async(self.kernel)
+            except Exception as e:
+                print(
+                    f"Warning: Could not create enhanced architecture squad: {e}")
+                # Fallback to the sync version
+                if create_architecture_group_chat:
+                    self.chat = create_architecture_group_chat(self.kernel)
+                else:
+                    raise ImportError(
+                        "No architecture squad creation functions available")
             self.initialized = True
-        elif not create_kernel or not create_architecture_group_chat:
+        elif not create_kernel or (not create_architecture_group_chat_async and not create_architecture_group_chat):
             raise ImportError(
                 "Architecture squad modules not available. Please check your setup.")
 
