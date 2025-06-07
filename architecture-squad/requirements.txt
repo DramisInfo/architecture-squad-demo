@@ -1,0 +1,6 @@
+semantic-kernel
+openai
+azure-identity
+python-dotenv
+rich
+pydantic
