@@ -1,6 +1,0 @@
-requests
-aiohttp
-fastapi
-uvicorn
-python-dotenv
-beautifulsoup4

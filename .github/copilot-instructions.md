@@ -44,6 +44,88 @@ Your responsibility is to [specific role description].
 )
 ```
 
+### MCP Plugin Integration with Agents
+Follow Microsoft's [Semantic Kernel MCP plugin documentation](https://learn.microsoft.com/en-us/semantic-kernel/concepts/plugins/adding-mcp-plugins?pivots=programming-language-python) for proper integration:
+
+#### Required Dependencies
+Ensure `semantic-kernel[mcp]` is installed:
+```bash
+pip install semantic-kernel[mcp]
+```
+
+#### MCP Plugin Integration Pattern
+```python
+from semantic_kernel import Kernel
+from semantic_kernel.connectors.mcp import MCPStdioPlugin, MCPSsePlugin
+from semantic_kernel.agents import ChatCompletionAgent
+
+async def create_agent_with_mcp(kernel: Kernel) -> ChatCompletionAgent:
+    """Create an agent with MCP server integration"""
+    
+    # Option 1: Connect to stdio-based MCP server
+    async with MCPStdioPlugin(
+        name="AzureResearch",
+        description="Azure documentation research capabilities",
+        command="python",
+        args=["mcp-servers/azure-research/server.py"],
+        env={},  # Environment variables if needed
+        load_tools=True,
+        load_prompts=False,
+        request_timeout=30
+    ) as mcp_plugin:
+        kernel.add_plugin(mcp_plugin)
+        
+        # Option 2: Connect to HTTP/SSE-based MCP server
+        # async with MCPSsePlugin(
+        #     name="AzureResearch",
+        #     description="Azure documentation research capabilities", 
+        #     url="http://localhost:8080",
+        #     load_tools=True,
+        #     load_prompts=False,
+        #     request_timeout=30
+        # ) as mcp_plugin:
+        #     kernel.add_plugin(mcp_plugin)
+        
+        agent = ChatCompletionAgent(
+            kernel=kernel,
+            name="Enhanced_Agent",
+            instructions="""
+            You have access to MCP tools for enhanced capabilities.
+            Use the available tools when appropriate for your tasks.
+            """,
+        )
+        
+        return agent
+
+# Manual connection management (alternative)
+async def create_agent_manual_mcp():
+    """Alternative approach with manual MCP connection management"""
+    mcp_plugin = MCPStdioPlugin(
+        name="AzureResearch",
+        description="Azure documentation research capabilities",
+        command="python",
+        args=["mcp-servers/azure-research/server.py"],
+    )
+    
+    await mcp_plugin.connect()
+    
+    kernel = Kernel()
+    kernel.add_plugin(mcp_plugin)
+    
+    agent = ChatCompletionAgent(kernel=kernel, name="Enhanced_Agent")
+    
+    # Remember to close the connection later
+    # await mcp_plugin.close()
+    
+    return agent, mcp_plugin
+```
+
+#### MCP Plugin Configuration Options
+- **`load_tools`**: Set to `True` to load tools from MCP server (default: True)
+- **`load_prompts`**: Set to `False` if MCP server has no prompts to avoid hanging (default: True)
+- **`request_timeout`**: Timeout for MCP server requests in seconds (recommended: 30)
+- **`env`**: Environment variables to pass to the MCP server process
+
 ### Chainlit UI Component (`/chainlit-ui/`)
 Built with **Chainlit** - Create an interactive web interface for communicating with the architecture squad.
 
@@ -73,34 +155,112 @@ async def main(message: cl.Message):
 ```
 
 ### MCP Servers Component (`/mcp-servers/`)
-Built with **Model Context Protocol** - Create extensible plugins for agent capabilities.
+Built with **Model Context Protocol** - Create extensible plugins for agent capabilities following the [official MCP server quickstart guide](https://modelcontextprotocol.io/quickstart/server).
 
-#### MCP Server Guidelines
-- Each server should focus on a specific capability (research, diagrams, analysis)
-- Use standardized MCP protocol for tool registration
-- Implement proper error handling and logging
-- Follow async patterns for external API calls
-- Include proper authentication and rate limiting
+#### MCP Server Organization Guidelines
+- **Each MCP server MUST be in its own dedicated folder** under `/mcp-servers/`
+- Each server folder contains its own `requirements.txt`, `README.md`, and standalone test files
+- Server folders should be named descriptively (e.g., `azure-research/`, `diagram-generator/`, `code-analyzer/`)
+- Each server must be independently testable and deployable
+- Follow the official MCP protocol specifications from https://modelcontextprotocol.io/
 
-#### Example MCP Server Structure
+#### MCP Server Structure (Per Server Folder)
+```
+mcp-servers/
+├── azure-research/
+│   ├── server.py              # Main MCP server implementation
+│   ├── test_server.py         # Standalone tests for the server
+│   ├── requirements.txt       # Server-specific dependencies
+│   ├── README.md             # Server documentation and usage
+│   └── .env.example          # Environment variables template
+├── diagram-generator/
+│   ├── server.py
+│   ├── test_server.py
+│   ├── requirements.txt
+│   ├── README.md
+│   └── .env.example
+└── code-analyzer/
+    ├── server.py
+    ├── test_server.py
+    ├── requirements.txt
+    ├── README.md
+    └── .env.example
+```
+
+#### MCP Server Development Guidelines
+- **Follow MCP Protocol**: Reference https://modelcontextprotocol.io/quickstart/server for implementation patterns
+- **Use FastMCP Framework**: Recommended for Python-based MCP servers (simpler than raw MCP protocol)
+- **Tool Registration**: Each server should focus on a specific capability (research, diagrams, analysis)
+- **Standalone Testing**: Each server must include `test_server.py` for independent validation
+- **Error Handling**: Implement proper error handling and logging for all MCP operations
+- **Async Patterns**: Follow async patterns for external API calls and I/O operations
+- **Authentication**: Include proper authentication and rate limiting where needed
+- **Documentation**: Each server folder must have comprehensive README.md with usage examples
+
+#### Example MCP Server Implementation (using FastMCP)
 ```python
-from mcp import McpServer, Tool
+# In mcp-servers/azure-research/server.py
+from fastmcp import FastMCP
+from typing import Dict, Any
+import asyncio
 
-class ResearchMCP(McpServer):
-    def __init__(self):
-        super().__init__("research-server")
-        self.register_tool(self.web_search)
-        self.register_tool(self.analyze_documentation)
-    
-    @Tool("web_search")
-    async def web_search(self, query: str) -> dict:
-        # Implementation for web search capability
-        pass
-    
-    @Tool("analyze_documentation")
-    async def analyze_documentation(self, url: str) -> dict:
-        # Implementation for documentation analysis
-        pass
+# Create MCP server
+mcp = FastMCP("Azure Research Server")
+
+@mcp.tool()
+async def search_azure_docs(query: str, max_results: int = 5) -> Dict[str, Any]:
+    """Search Azure documentation for relevant information"""
+    # Implementation for Azure documentation search
+    return {
+        "success": True,
+        "query": query,
+        "results": []
+    }
+
+@mcp.tool()
+async def get_azure_service_info(service_name: str) -> Dict[str, Any]:
+    """Get detailed information about a specific Azure service"""
+    # Implementation for service information retrieval
+    return {
+        "success": True,
+        "service": service_name,
+        "info": {}
+    }
+
+if __name__ == "__main__":
+    mcp.run()
+```
+
+#### Standalone Testing Pattern
+```python
+# In mcp-servers/azure-research/test_server.py
+import asyncio
+import pytest
+from server import search_azure_docs, get_azure_service_info
+
+async def test_search_azure_docs():
+    """Test Azure documentation search functionality"""
+    result = await search_azure_docs("App Service", max_results=3)
+    assert result["success"] is True
+    assert "query" in result
+    print("✅ Azure docs search test passed")
+
+async def test_get_azure_service_info():
+    """Test Azure service information retrieval"""
+    result = await get_azure_service_info("Functions")
+    assert result["success"] is True
+    assert result["service"] == "Functions"
+    print("✅ Azure service info test passed")
+
+async def main():
+    """Run all tests for the Azure Research MCP server"""
+    print("🧪 Testing Azure Research MCP Server...")
+    await test_search_azure_docs()
+    await test_get_azure_service_info()
+    print("✅ All tests passed!")
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 ## Multi-Project Integration Guidelines
@@ -145,11 +305,24 @@ architecture-squad-demo/
 │   ├── requirements.txt
 │   └── .env
 ├── mcp-servers/
-│   ├── research_server.py
-│   ├── diagram_server.py
-│   ├── analysis_server.py
-│   ├── requirements.txt
-│   └── .env
+│   ├── azure-research/
+│   │   ├── server.py
+│   │   ├── test_server.py
+│   │   ├── requirements.txt
+│   │   ├── README.md
+│   │   └── .env.example
+│   ├── diagram-generator/
+│   │   ├── server.py
+│   │   ├── test_server.py
+│   │   ├── requirements.txt
+│   │   ├── README.md
+│   │   └── .env.example
+│   └── code-analyzer/
+│       ├── server.py
+│       ├── test_server.py
+│       ├── requirements.txt
+│       ├── README.md
+│       └── .env.example
 └── README.md
 ```
 
@@ -267,7 +440,7 @@ Generate comprehensive architecture documents including:
 
 #### Architecture Squad (`/architecture-squad/requirements.txt`)
 ```
-semantic-kernel
+semantic-kernel[mcp]
 openai
 azure-identity
 python-dotenv
@@ -285,13 +458,25 @@ python-dotenv
 websockets
 ```
 
-#### MCP Servers (`/mcp-servers/requirements.txt`)
+#### MCP Servers (`/mcp-servers/requirements.txt`)  
+**Note**: Each MCP server folder has its own `requirements.txt` for server-specific dependencies
 ```
+# Global MCP dependencies (if any shared across servers)
 mcp
-fastapi
-uvicorn
-requests
+```
+
+#### Individual MCP Server Dependencies
+```
+# Example: mcp-servers/azure-research/requirements.txt
+mcp
 aiohttp
+beautifulsoup4
+python-dotenv
+
+# Example: mcp-servers/diagram-generator/requirements.txt  
+mcp
+pillow
+matplotlib
 python-dotenv
 ```
 
@@ -350,18 +535,36 @@ async def main(message: cl.Message):
 
 #### MCP Server Integration
 ```python
-# In architecture-squad/agents/research_agent.py
-from mcp_client import MCPClient
+# In architecture-squad/agents/azure_solution_architect.py
+from semantic_kernel import Kernel
+from semantic_kernel.connectors.mcp import MCPStdioPlugin
+from semantic_kernel.agents import ChatCompletionAgent
 
-class ResearchAgent:
-    def __init__(self, kernel, mcp_client: MCPClient):
-        self.kernel = kernel
-        self.mcp = mcp_client
+async def create_azure_solution_architect_with_mcp(kernel: Kernel) -> ChatCompletionAgent:
+    """Create Azure Solution Architect with MCP research capabilities"""
     
-    async def research_topic(self, topic: str):
-        # Use MCP server for web research
-        research_results = await self.mcp.call_tool("web_search", {"query": topic})
-        return self.process_research_results(research_results)
+    # Connect to Azure Research MCP server
+    async with MCPStdioPlugin(
+        name="AzureResearch",
+        description="Azure documentation research capabilities",
+        command="python",
+        args=["mcp-servers/azure-research/server.py"],
+        load_tools=True,
+        load_prompts=False,
+        request_timeout=30
+    ) as mcp_plugin:
+        kernel.add_plugin(mcp_plugin)
+        
+        agent = ChatCompletionAgent(
+            kernel=kernel,
+            name="Azure_Solution_Architect",
+            instructions="""
+            You are a Microsoft Azure Certified Solution Architect with access to real-time Azure research tools.
+            Use the available MCP tools to research Azure services and reference architectures.
+            """,
+        )
+        
+        return agent
 ```
 
 This pattern enables collaborative architecture design through specialized AI agents working together across multiple integrated projects to produce comprehensive technical documentation.
