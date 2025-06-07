@@ -64,6 +64,38 @@ The agents work together using Semantic Kernel's group chat functionality to sim
    pip install -r requirements.txt
    ```
 
+### Configuration
+
+The architecture squad supports multiple AI service providers through environment variables:
+
+#### GitHub Models (Default)
+```bash
+API_HOST=github
+GITHUB_TOKEN=your_github_token_here
+GITHUB_MODEL=gpt-4o
+```
+
+#### Azure OpenAI with API Key
+```bash
+API_HOST=azure
+AZURE_OPENAI_ENDPOINT=your_azure_openai_endpoint
+AZURE_OPENAI_CHAT_MODEL=gpt-4
+AZURE_OPENAI_VERSION=2024-02-01
+AZURE_OPENAI_API_KEY=your_azure_openai_api_key
+```
+
+#### Azure OpenAI with Azure AD (Enterprise)
+```bash
+API_HOST=azure
+AZURE_OPENAI_ENDPOINT=your_azure_openai_endpoint
+AZURE_OPENAI_CHAT_MODEL=gpt-4
+AZURE_OPENAI_VERSION=2024-02-01
+# Leave AZURE_OPENAI_API_KEY empty to use Azure AD authentication
+# Requires: az login or service principal configuration
+```
+
+Copy `/architecture-squad/.env.example` to `/architecture-squad/.env` and update with your credentials.
+
 ## Project Components
 
 ### Architecture Squad (Semantic Kernel)
