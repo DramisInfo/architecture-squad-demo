@@ -1,30 +1,29 @@
 #!/usr/bin/env python3
 """
-Clustered diagram generation functions for the Diagram Generator MCP Server
+Diagram generation functions for the Diagram Generator MCP Server
 """
 
 import os
 from typing import Dict, Any, List
 
-from core.config import Diagram, Cluster, Edge, logger
+from core.config import Diagram, Edge, logger
 from core.utils import generate_unique_filename, get_component_class
 
 
-async def generate_clustered_diagram(
+async def generate_diagram(
     title: str,
-    clusters: List[Dict[str, Any]],
+    components: List[Dict[str, Any]],
     connections: List[Dict[str, Any]] = None,
     output_format: str = "png",
     direction: str = "TB"
 ) -> Dict[str, Any]:
     """
-    Generate a clustered architecture diagram with grouped components.
+    Generate an architecture diagram with components.
 
     Args:
         title: The title of the diagram
-        clusters: List of clusters with format:
-            [{"name": "Web Tier", "components": [
-                {"id": "web1", "type": "aws.compute.ec2", "label": "Web Server"}]}]
+        components: List of components with format:
+            [{"id": "web1", "type": "aws.compute.ec2", "label": "Web Server"}]
         connections: List of connections between components
         output_format: Output format (png, jpg, svg, pdf)
         direction: Diagram direction (TB, BT, LR, RL)
@@ -44,27 +43,22 @@ async def generate_clustered_diagram(
 
             component_instances = {}
 
-            # Create clusters with components
-            for cluster_def in clusters:
-                cluster_name = cluster_def["name"]
-                cluster_components = cluster_def["components"]
+            # Create components
+            for comp in components:
+                comp_id = comp["id"]
+                comp_type = comp["type"]
+                comp_label = comp.get("label", comp_id)
 
-                with Cluster(cluster_name):
-                    for comp in cluster_components:
-                        comp_id = comp["id"]
-                        comp_type = comp["type"]
-                        comp_label = comp.get("label", comp_id)
+                # Parse component type
+                parts = comp_type.split(".")
+                if len(parts) >= 3:
+                    provider, category, component = parts[0], parts[1], parts[2]
+                    ComponentClass = get_component_class(
+                        provider, category, component)
 
-                        # Parse component type
-                        parts = comp_type.split(".")
-                        if len(parts) >= 3:
-                            provider, category, component = parts[0], parts[1], parts[2]
-                            ComponentClass = get_component_class(
-                                provider, category, component)
-
-                            if ComponentClass:
-                                component_instances[comp_id] = ComponentClass(
-                                    comp_label)
+                    if ComponentClass:
+                        component_instances[comp_id] = ComponentClass(
+                            comp_label)
 
             # Create connections
             if connections:
@@ -86,11 +80,11 @@ async def generate_clustered_diagram(
                 "success": True,
                 "title": title,
                 "format": output_format,
-                "clusters_count": len(clusters),
+                "components_count": len(components),
                 "connections_count": len(connections) if connections else 0,
                 "file_path": file_path,
                 "filename": filename,
-                "message": f"Clustered diagram '{title}' generated successfully and saved to {filename}"
+                "message": f"Diagram '{title}' generated successfully and saved to {filename}"
             }
         else:
             return {
@@ -99,7 +93,7 @@ async def generate_clustered_diagram(
             }
 
     except Exception as e:
-        logger.error(f"Error generating clustered diagram: {str(e)}")
+        logger.error(f"Error generating diagram: {str(e)}")
         return {
             "success": False,
             "error": str(e)

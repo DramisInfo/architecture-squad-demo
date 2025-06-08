@@ -68,16 +68,13 @@ def main():
         pytest_args.extend([
             "tests/test_server_initialization.py",
             "tests/test_component_listing.py",
-            "tests/test_simple_diagrams.py"
+            "tests/test_dynamic_diagrams.py"
         ])
     elif args.component:
         # Component tests
         pytest_args.extend([
-            "tests/test_simple_diagrams.py",
-            "tests/test_clustered_diagrams.py",
-            "tests/test_aws_diagrams.py",
-            "tests/test_kubernetes_diagrams.py",
-            "tests/test_microservices_diagrams.py"
+            "tests/test_dynamic_diagrams.py",
+            "tests/test_clustered_diagrams.py"
         ])
     elif args.integration:
         # Integration tests

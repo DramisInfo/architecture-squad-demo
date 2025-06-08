@@ -26,7 +26,7 @@ async def test_error_handling_invalid_component(test_server):
         }
 
         # Call the tool - should handle error gracefully
-        result = await client.call_tool("generate_simple_diagram", params)
+        result = await client.call_tool("generate_dynamic_diagram", params)
 
         # Verify the call doesn't crash the server
         assert not result.isError
@@ -57,7 +57,7 @@ async def test_missing_required_parameters(test_server):
         }
 
         # Server should return an error for missing required parameter
-        result = await client.call_tool("generate_simple_diagram", params)
+        result = await client.call_tool("generate_dynamic_diagram", params)
 
         # Verify the server returns a proper error for missing parameters
         assert result.isError  # This should be an error response
@@ -80,7 +80,7 @@ async def test_empty_components_list(test_server):
         }
 
         # Call the tool
-        result = await client.call_tool("generate_simple_diagram", params)
+        result = await client.call_tool("generate_dynamic_diagram", params)
 
         # Verify the call doesn't crash the server
         assert not result.isError
@@ -110,7 +110,7 @@ async def test_invalid_connection_references(test_server):
         }
 
         # Call the tool
-        result = await client.call_tool("generate_simple_diagram", params)
+        result = await client.call_tool("generate_dynamic_diagram", params)
 
         # Verify the call doesn't crash the server
         assert not result.isError

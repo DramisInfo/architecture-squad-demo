@@ -32,11 +32,7 @@ async def test_list_tools(test_server):
 
         # Verify all expected tools are present
         expected_tools = [
-            "generate_simple_diagram",
-            "generate_clustered_diagram",
-            "generate_aws_web_app_diagram",
-            "generate_kubernetes_diagram",
-            "generate_microservices_diagram",
+            "generate_dynamic_diagram",
             "list_available_components"
         ]
 

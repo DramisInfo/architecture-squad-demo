@@ -46,24 +46,12 @@ async def test_tool_parameter_validation(test_server):
     async with client_session(test_server._mcp_server) as client:
         await client.initialize()
 
-        # Test each tool with valid minimal parameters
+        # Test the dynamic tool with valid parameters
         test_cases = [
-            ("generate_simple_diagram", {
+            ("generate_dynamic_diagram", {
                 "title": "Test",
-                "components": [{"id": "test", "type": "aws.compute.ec2", "label": "Test"}]
-            }),
-            ("generate_clustered_diagram", {
-                "title": "Test",
-                "clusters": [{"name": "Test", "components": [{"id": "test", "type": "aws.compute.ec2", "label": "Test"}]}]
-            }),
-            ("generate_aws_web_app_diagram", {
-                "title": "Test"
-            }),
-            ("generate_kubernetes_diagram", {
-                "title": "Test"
-            }),
-            ("generate_microservices_diagram", {
-                "title": "Test"
+                "components": [{"id": "test", "type": "aws.compute.ec2", "label": "Test"}],
+                "connections": [{"from": "test", "to": "test2", "label": "Connection"}]
             }),
             ("list_available_components", {})
         ]
@@ -83,11 +71,7 @@ async def test_tool_names_consistency(test_server):
         tool_names = sorted([tool.name for tool in tools_result.tools])
 
         expected_tools = sorted([
-            "generate_simple_diagram",
-            "generate_clustered_diagram",
-            "generate_aws_web_app_diagram",
-            "generate_kubernetes_diagram",
-            "generate_microservices_diagram",
+            "generate_dynamic_diagram",
             "list_available_components"
         ])
 
