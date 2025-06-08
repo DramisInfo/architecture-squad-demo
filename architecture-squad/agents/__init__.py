@@ -13,10 +13,7 @@ from .kubernetes_solution_architect import create_kubernetes_solution_architect
 from .technical_architect import create_technical_architect
 from .security_architect import create_security_architect
 from .data_architect import create_data_architect
-from .documentation_specialist import (
-    create_documentation_specialist,
-    create_enhanced_documentation_specialist
-)
+from .documentation_specialist import create_enhanced_documentation_specialist
 
 __all__ = [
     "create_platform_selector",
@@ -27,6 +24,5 @@ __all__ = [
     "create_technical_architect",
     "create_security_architect",
     "create_data_architect",
-    "create_documentation_specialist",
     "create_enhanced_documentation_specialist",
 ]

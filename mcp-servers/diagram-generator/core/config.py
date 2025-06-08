@@ -176,7 +176,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Volume mount path where diagrams will be saved
-VOLUME_MOUNT_PATH = "/tmp"
+# Can be overridden via DIAGRAM_OUTPUT_DIR environment variable
+VOLUME_MOUNT_PATH = os.environ.get("DIAGRAM_OUTPUT_DIR", "/tmp")
 
 # Component mappings for easy lookup
 COMPONENT_MAPPINGS = {

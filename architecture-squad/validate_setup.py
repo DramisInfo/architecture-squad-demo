@@ -25,7 +25,7 @@ def test_imports():
             create_technical_architect,
             create_security_architect,
             create_data_architect,
-            create_documentation_specialist,
+            create_enhanced_documentation_specialist,
         )
         print("✅ All agent imports successful")
 

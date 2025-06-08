@@ -62,9 +62,10 @@ async def automated_demo():
         agent for agent in chat.agents if "Documentation" in agent.name]
     if doc_agents:
         doc_agent = doc_agents[0]
-        if hasattr(doc_agent, '_kernel') and hasattr(doc_agent._kernel, 'plugins'):
-            mcp_plugins = [plugin for plugin in doc_agent._kernel.plugins
-                           if 'diagram' in plugin.name.lower()]
+        if hasattr(doc_agent, 'kernel') and hasattr(doc_agent.kernel, 'plugins'):
+            plugin_names = list(doc_agent.kernel.plugins.keys())
+            mcp_plugins = [name for name in plugin_names
+                           if 'DiagramGenerator' in name or 'diagram' in name.lower()]
             if mcp_plugins:
                 print("✓ MCP Diagram Generator server connected successfully")
             else:
@@ -75,38 +76,7 @@ async def automated_demo():
 
     # Predefined test requirement for automated demo
     requirement = """
-Design a cloud-native microservices architecture for a modern e-commerce platform with the following requirements:
-
-FUNCTIONAL REQUIREMENTS:
-- User management (registration, authentication, profiles)
-- Product catalog with search and filtering
-- Shopping cart and checkout process
-- Order management and tracking
-- Payment processing (multiple providers)
-- Inventory management with real-time updates
-- Customer reviews and ratings
-- Notification system (email, SMS, push)
-- Analytics and reporting dashboard
-- Admin panel for content management
-
-NON-FUNCTIONAL REQUIREMENTS:
-- Support 50,000+ concurrent users during peak times
-- 99.9% uptime availability
-- Sub-200ms response times for critical operations
-- GDPR and PCI DSS compliance
-- Horizontal scalability
-- Multi-region deployment capability
-- Real-time inventory synchronization
-- Fault tolerance and disaster recovery
-
-TECHNICAL CONSTRAINTS:
-- Cloud-first architecture (AWS/Azure preferred)
-- Container-based deployment
-- CI/CD pipeline integration
-- Microservices pattern with API gateway
-- Event-driven architecture for real-time features
-- Separate read/write databases where appropriate
-- Caching strategy for performance optimization
+I need an architecture for azure api management self-hosted gateways on openshift
 """
 
     print(f"\n📋 Processing Requirement:")

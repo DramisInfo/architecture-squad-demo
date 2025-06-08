@@ -83,8 +83,8 @@ async def create_architecture_group_chat_async(kernel: Kernel) -> AgentGroupChat
 
 def create_architecture_group_chat(kernel: Kernel) -> AgentGroupChat:
     """Create the architecture squad group chat with all agents and strategies (sync version - fallback)"""
-    # Import the fallback function for synchronous creation
-    from agents.documentation_specialist import create_documentation_specialist
+    # Since create_documentation_specialist is removed, we'll use the async version with a synchronous wrapper
+    import asyncio
 
     # Create all architecture agents
     platform_selector = create_platform_selector(kernel)
@@ -96,8 +96,9 @@ def create_architecture_group_chat(kernel: Kernel) -> AgentGroupChat:
     technical_architect = create_technical_architect(kernel)
     security_architect = create_security_architect(kernel)
     data_architect = create_data_architect(kernel)
-    # Fallback documentation specialist (without diagram generation)
-    documentation_specialist = create_documentation_specialist(kernel)
+    # Use the enhanced documentation specialist with a sync wrapper
+    documentation_specialist = asyncio.run(
+        create_enhanced_documentation_specialist(kernel))
 
     # Create selection and termination functions
     selection_function = create_selection_function()
