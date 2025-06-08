@@ -2,96 +2,93 @@
 Test tool validation and metadata.
 """
 
+import pytest
 from mcp.shared.memory import create_connected_server_and_client_session as client_session
-from .base_test import AsyncMCPTest
+from .base_test import test_server
 
 
-class TestToolValidation(AsyncMCPTest):
-    """Test suite for tool validation and metadata."""
+@pytest.mark.anyio
+async def test_tool_descriptions(test_server):
+    """Test that all tools have proper descriptions."""
+    async with client_session(test_server._mcp_server) as client:
+        await client.initialize()
 
-    async def test_tool_descriptions(self):
-        """Test that all tools have proper descriptions."""
-        mcp = self.create_test_server()
+        # List tools and check descriptions
+        tools_result = await client.list_tools()
 
-        async with client_session(mcp._mcp_server) as client:
-            await client.initialize()
+        for tool in tools_result.tools:
+            assert tool.description is not None, f"Tool {tool.name} missing description"
+            assert len(
+                tool.description) > 0, f"Tool {tool.name} has empty description"
+            assert isinstance(
+                tool.description, str), f"Tool {tool.name} description is not a string"
 
-            # List tools and check descriptions
-            tools_result = await client.list_tools()
 
-            for tool in tools_result.tools:
-                assert tool.description is not None, f"Tool {tool.name} missing description"
-                assert len(
-                    tool.description) > 0, f"Tool {tool.name} has empty description"
-                assert isinstance(
-                    tool.description, str), f"Tool {tool.name} description is not a string"
+@pytest.mark.anyio
+async def test_tool_input_schemas(test_server):
+    """Test that all tools have proper input schemas."""
+    async with client_session(test_server._mcp_server) as client:
+        await client.initialize()
 
-    async def test_tool_input_schemas(self):
-        """Test that all tools have proper input schemas."""
-        mcp = self.create_test_server()
+        # List tools and check schemas
+        tools_result = await client.list_tools()
 
-        async with client_session(mcp._mcp_server) as client:
-            await client.initialize()
+        for tool in tools_result.tools:
+            assert tool.inputSchema is not None, f"Tool {tool.name} missing input schema"
+            assert "type" in tool.inputSchema, f"Tool {tool.name} schema missing type"
+            assert tool.inputSchema["type"] == "object", f"Tool {tool.name} schema type should be object"
+            assert "properties" in tool.inputSchema, f"Tool {tool.name} schema missing properties"
 
-            # List tools and check schemas
-            tools_result = await client.list_tools()
 
-            for tool in tools_result.tools:
-                assert tool.inputSchema is not None, f"Tool {tool.name} missing input schema"
-                assert "type" in tool.inputSchema, f"Tool {tool.name} schema missing type"
-                assert tool.inputSchema["type"] == "object", f"Tool {tool.name} schema type should be object"
-                assert "properties" in tool.inputSchema, f"Tool {tool.name} schema missing properties"
+@pytest.mark.anyio
+async def test_tool_parameter_validation(test_server):
+    """Test that tools properly validate their parameters."""
+    async with client_session(test_server._mcp_server) as client:
+        await client.initialize()
 
-    async def test_tool_parameter_validation(self):
-        """Test that tools properly validate their parameters."""
-        mcp = self.create_test_server()
+        # Test each tool with valid minimal parameters
+        test_cases = [
+            ("generate_simple_diagram", {
+                "title": "Test",
+                "components": [{"id": "test", "type": "aws.compute.ec2", "label": "Test"}]
+            }),
+            ("generate_clustered_diagram", {
+                "title": "Test",
+                "clusters": [{"name": "Test", "components": [{"id": "test", "type": "aws.compute.ec2", "label": "Test"}]}]
+            }),
+            ("generate_aws_web_app_diagram", {
+                "title": "Test"
+            }),
+            ("generate_kubernetes_diagram", {
+                "title": "Test"
+            }),
+            ("generate_microservices_diagram", {
+                "title": "Test"
+            }),
+            ("list_available_components", {})
+        ]
 
-        async with client_session(mcp._mcp_server) as client:
-            await client.initialize()
+        for tool_name, params in test_cases:
+            result = await client.call_tool(tool_name, params)
+            assert not result.isError, f"Tool {tool_name} failed with valid parameters"
 
-            # Test each tool with valid minimal parameters
-            test_cases = [
-                ("generate_simple_diagram", {
-                    "title": "Test",
-                    "components": [{"id": "test", "type": "aws.compute.ec2", "label": "Test"}]
-                }),
-                ("generate_clustered_diagram", {
-                    "title": "Test",
-                    "clusters": [{"name": "Test", "components": [{"id": "test", "type": "aws.compute.ec2", "label": "Test"}]}]
-                }),
-                ("generate_aws_web_app_diagram", {
-                    "title": "Test"
-                }),
-                ("generate_kubernetes_diagram", {
-                    "title": "Test"
-                }),
-                ("generate_microservices_diagram", {
-                    "title": "Test"
-                }),
-                ("list_available_components", {})
-            ]
 
-            for tool_name, params in test_cases:
-                result = await client.call_tool(tool_name, params)
-                assert not result.isError, f"Tool {tool_name} failed with valid parameters"
+@pytest.mark.anyio
+async def test_tool_names_consistency(test_server):
+    """Test that all expected tools are present with correct names."""
+    async with client_session(test_server._mcp_server) as client:
+        await client.initialize()
 
-    async def test_tool_names_consistency(self):
-        """Test that all expected tools are present with correct names."""
-        mcp = self.create_test_server()
+        tools_result = await client.list_tools()
+        tool_names = sorted([tool.name for tool in tools_result.tools])
 
-        async with client_session(mcp._mcp_server) as client:
-            await client.initialize()
+        expected_tools = sorted([
+            "generate_simple_diagram",
+            "generate_clustered_diagram",
+            "generate_aws_web_app_diagram",
+            "generate_kubernetes_diagram",
+            "generate_microservices_diagram",
+            "list_available_components"
+        ])
 
-            tools_result = await client.list_tools()
-            tool_names = sorted([tool.name for tool in tools_result.tools])
-
-            expected_tools = sorted([
-                "generate_simple_diagram",
-                "generate_clustered_diagram",
-                "generate_aws_web_app_diagram",
-                "generate_kubernetes_diagram",
-                "generate_microservices_diagram",
-                "list_available_components"
-            ])
-
-            assert tool_names == expected_tools, f"Tool names mismatch. Expected: {expected_tools}, Got: {tool_names}"
+        assert tool_names == expected_tools, f"Tool names mismatch. Expected: {expected_tools}, Got: {tool_names}"

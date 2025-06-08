@@ -3,3 +3,6 @@ diagrams
 fastmcp
 python-dotenv
 pillow
+pytest
+pytest-asyncio
+anyio
